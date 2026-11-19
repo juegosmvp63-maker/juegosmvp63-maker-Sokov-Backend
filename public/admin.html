@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - SokovmcDigital</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-white font-sans min-h-screen p-4 md:p-8">
+  <div class="max-w-5xl mx-auto">
+    <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6 pb-4 border-b border-slate-800">
+      <div>
+        <span class="bg-rose-600 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">Panel de Control</span>
+        <h1 class="text-2xl md:text-3xl font-black mt-1 text-cyan-400">Pedidos SokovmcDigital</h1>
+      </div>
+      <button onclick="cargarPedidos()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow transition active:scale-95">
+        🔄 Actualizar Lista
+      </button>
+    </div>
+
+    <div id="orders-container" class="space-y-4">
+      <p class="text-slate-400 text-sm text-center py-8">Cargando pedidos...</p>
+    </div>
+  </div>
+
+  <script>
+    async function cargarPedidos() {
+      const container = document.getElementById('orders-container');
+      try {
+        const res = await fetch('/api/admin/orders');
+        const data = await res.json();
+        
+        if (!data.orders || data.orders.length === 0) {
+          container.innerHTML = '<div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-8 text-center text-slate-400 text-sm">No hay pedidos registrados todavía.</div>';
+          return;
+        }
+
+        container.innerHTML = data.orders.map(o => {
+          let badgeColor = 'bg-yellow-500/20 text-yellow-300 border-yellow-500/40';
+          let statusText = '⏳ Pendiente';
+          if (o.status === 'approved') {
+            badgeColor = 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40';
+            statusText = '✅ Aprobado';
+          } else if (o.status === 'rejected') {
+            badgeColor = 'bg-rose-500/20 text-rose-300 border-rose-500/40';
+            statusText = '❌ Rechazado';
+          } else if (o.status === 'error_provider') {
+            badgeColor = 'bg-orange-500/20 text-orange-300 border-orange-500/40';
+            statusText = '⚠️ Error Proveedor';
+          }
+
+          return `
+            <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 flex flex-col md:flex-row justify-between gap-4 shadow-lg">
+              <div class="space-y-1.5 text-xs">
+                <div class="flex items-center gap-2">
+                  <span class="font-mono font-bold text-cyan-400 text-sm">${o.id}</span>
+                  <span class="px-2.5 py-0.5 rounded-full border text-[11px] font-bold ${badgeColor}">${statusText}</span>
+                </div>
+                <p class="text-slate-300"><strong class="text-white">Juego:</strong> ${o.game} | <strong class="text-white">Paquete:</strong> ${o.package_name}</p>
+                <p class="text-slate-300"><strong class="text-white">Player ID:</strong> <span class="font-mono text-amber-300">${o.player_id}</span> (${o.server})</p>
+                <p class="text-slate-300"><strong class="text-white">Pago:</strong> ${o.payment_method} | <strong class="text-white">Ref:</strong> <span class="font-mono text-emerald-300">${o.reference}</span> | <strong class="text-white">Tel:</strong> ${o.phone}</p>
+                ${o.provider_error ? `<p class="text-rose-400 font-mono text-[11px] bg-rose-950/40 p-2 rounded mt-1">Error API: ${JSON.stringify(o.provider_error)}</p>` : ''}
+                ${o.receipt ? `<div class="pt-1"><a href="${o.receipt}" target="_blank" class="text-blue-400 underline font-semibold">📎 Ver Comprobante Adjunto</a></div>` : ''}
+              </div>
+
+              ${o.status === 'pending' || o.status === 'error_provider' ? `
+                <div class="flex sm:flex-col justify-end gap-2">
+                  <button onclick="gestionarPedido('${o.id}', 'approve')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition active:scale-95">
+                    ✅ Aprobar y Recargar
+                  </button>
+                  <button onclick="gestionarPedido('${o.id}', 'reject')" class="bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition active:scale-95">
+                    ❌ Rechazar
+                  </button>
+                </div>
+              ` : ''}
+            </div>
+          `;
+        }).join('');
+      } catch (err) {
+        container.innerHTML = '<p class="text-rose-400 text-sm text-center">Error al cargar pedidos.</p>';
+      }
+    }
+
+    async function gestionarPedido(id, action) {
+      if (!confirm(action === 'approve' ? '¿Aprobar pedido y enviar recarga a Central One?' : '¿Rechazar este pedido?')) return;
+      try {
+        const res = await fetch(`/api/admin/orders/${id}/action`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action })
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert(action === 'approve' ? '✅ Pedido aprobado y enviado.' : 'Pedido rechazado.');
+          cargarPedidos();
+        } else {
+          alert('❌ Error: ' + (data.error || 'No se pudo procesar'));
+          cargarPedidos();
+        }
+      } catch (e) {
+        alert('❌ Error de conexión');
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', cargarPedidos);
+  </script>
+</body>
+</html>
