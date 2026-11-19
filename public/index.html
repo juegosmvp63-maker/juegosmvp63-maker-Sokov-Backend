@@ -26,8 +26,8 @@
 </head>
 <body class="bg-slate-950 text-white font-sans min-h-screen pb-24 relative">
   <!-- Fondo de Kurumi Tokisaki con respaldo de color garantizado -->
-  <div class="fixed inset-0 w-full h-full z-[-2] bg-cover bg-center bg-no-repeat bg-[#120408]" style="background-image: url('kurumi-bg.jpg');"></div>
-  <div class="fixed inset-0 z-[-1] bg-slate-950/40 backdrop-blur-[1px]"></div>
+  <div class="fixed inset-0 w-full h-full z-[-2] bg-cover bg-center bg-no-repeat bg-[#120408]" style="background-image: url('/kurumi-bg.jpg');"></div>
+  <div class="fixed inset-0 z-[-1] bg-slate-950/35 backdrop-blur-[1px]"></div>
 
   <!-- Banner SokovmcDigital -->
   <header class="relative bg-slate-950/50 backdrop-blur-md py-8 px-4 text-center overflow-hidden shadow-2xl border-b border-rose-500/30">
@@ -96,7 +96,7 @@
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
       <button type="button" onclick="seleccionarJuego('Free Fire')" id="btn-ff" class="py-3.5 px-3 bg-gradient-to-r from-blue-600 to-indigo-600 font-black rounded-2xl shadow-xl transition transform active:scale-95 border border-blue-400 flex flex-col items-center justify-center gap-1">
         <span class="text-base">⚡ Free Fire</span>
-        <span class="text-[11px] font-normal text-blue-100">Diamantes y Pases</span>
+        <span class="text-[11px] font-normal text-blue-100">Diamantes, Cajas y EVO</span>
       </button>
       <button type="button" onclick="seleccionarJuego('Blood Strike')" id="btn-bs" class="py-3.5 px-3 bg-slate-950/60 backdrop-blur-md text-slate-300 font-bold rounded-2xl shadow-xl transition transform active:scale-95 border border-slate-700/60 flex flex-col items-center justify-center gap-1 hover:border-purple-500/60">
         <span class="text-base">🔥 Blood Strike</span>
@@ -173,7 +173,7 @@
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label class="block text-xs font-semibold mb-1 text-slate-200">📦 Paquete o Recarga</label>
+          <label class="block text-xs font-semibold mb-1 text-slate-200">📦 Paquete, Cajas o Fragmentos EVO</label>
           <select id="package_name" class="w-full bg-slate-950/90 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-cyan-500">
           </select>
         </div>
@@ -215,7 +215,10 @@
       "2.398 Diamantes -> 14.972 Bs / $14.97",
       "6.160 Diamantes -> 37.935 Bs / $37.94",
       "Membresía: Tarjeta Semanal -> 1.910 Bs / $1.91",
-      "Membresía: Tarjeta Mensual -> 8.576 Bs / $8.58"
+      "Membresía: Tarjeta Mensual -> 8.576 Bs / $8.58",
+      "50 Cajas de Fragmentos Evo -> 7.020 Bs / $7.02",
+      "100 Cajas de Fragmentos Evo -> 14.040 Bs / $14.04",
+      "Fragmentos Evo (AWM / Woodpecker) -> Consultar / $5.50"
     ];
 
     const paquetesBloodStrike = [
